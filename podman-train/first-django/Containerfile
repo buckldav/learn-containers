@@ -1,0 +1,14 @@
+FROM python:3
+
+WORKDIR /app
+
+COPY ./requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Could omit files with a .dockerignore instead
+COPY ./src ./src
+COPY ./manage.py .
+RUN [ "python", "./manage.py", "migrate" ]
+
+# This executes on "podman run"
+CMD [ "gunicorn", "--bind=0.0.0.0:8000", "src.wsgi" ]
